@@ -16,10 +16,15 @@
  */
 package edu.eci.cosw.examples.productorders.services;
 
+import edu.eci.cosw.samples.model.Cliente;
 import edu.eci.cosw.samples.model.Despacho;
 import edu.eci.cosw.samples.model.Pedido;
 import edu.eci.cosw.samples.model.Producto;
+import edu.eci.cosw.samples.model.Vehiculo;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /**
  *
@@ -35,4 +40,9 @@ public interface ApplicationServices {
     
     public Despacho dispatchByID(Integer id) throws ServicesException;;
     
+    public List<Vehiculo> getVehiclesByProductId(Integer id) throws ServicesException;
+    
+    public List<Cliente> getClientsByProductValue(Long value) throws ServicesException;
+    
+    public void registerDispatch(MultipartHttpServletRequest request, int idPedido, String idVehiculo) throws ServicesException, SQLException, IOException;
 }

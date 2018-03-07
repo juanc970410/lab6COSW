@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import edu.eci.cosw.examples.productorders.services.ApplicationServices;
 import edu.eci.cosw.examples.productorders.services.ServicesException;
+import java.io.IOException;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /**
  *
@@ -44,10 +47,9 @@ public class DispatchController {
     @Autowired
     ApplicationServices services;
 
-    
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Despacho> getDespacho(@PathVariable("id") int id) {        
+    public ResponseEntity<Despacho> getDespacho(@PathVariable("id") int id) {
         try {
             return ResponseEntity.ok().body(services.dispatchByID(id));
         } catch (ServicesException ex) {
@@ -56,5 +58,32 @@ public class DispatchController {
         }
     }
 
+    @RequestMapping(value = "/{id}/qrcode", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<InputStreamResource> getQRCode(@PathVariable Integer id) {
+        try {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("image/png"))
+                    .body(new InputStreamResource(services.dispatchByID(id).getQrcode().getBinaryStream()));
+        } catch (ServicesException ex) {
+            Logger.getLogger(DispatchController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DispatchController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
     
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public ResponseEntity uploadFile(MultipartHttpServletRequest request, @RequestParam(name = "idpedido") int idPedido, @RequestParam(name = "idvehiculo") String idVehiculo) {
+        try {
+            services.registerDispatch(request, idPedido, idVehiculo);
+            return new ResponseEntity<>("{}", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

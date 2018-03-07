@@ -65,7 +65,8 @@ public class Pedido implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "CLIENTES_idcliente", nullable = false)        
+	@JoinColumn(name = "CLIENTES_idcliente", nullable = false) 
+        @Fetch(FetchMode.JOIN)
 	public Cliente getCliente() {
 		return this.almClientes;
 	}
@@ -87,6 +88,7 @@ public class Pedido implements java.io.Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)        
 	@JoinColumn(name="PEDIDOS_idpedido")
+        @Fetch(FetchMode.JOIN)
 	public Set<DetallePedido> getDetallesPedidos() {
 		return this.almDetallesPedidos;
 	}
